@@ -1,2 +1,2 @@
-# ESP32-LoRa-Repeater
-Sensor node with gateway functionality to send and receive LoRa messages 
+# ESP32-LoRa-Sensor-Node
+Sensor Node sends sensor data from ESP32 via LoRa to LoRa gateway
