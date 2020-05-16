@@ -7,6 +7,8 @@
 
 #include <SPI.h>
 #include <LoRa.h>
+
+#define myID 2
 //#include <SoftwareSerial.h>
 //#include <HardwareSerial.h> // sollte bereits mit Arduino IDE installiert sein
 //#include <SoftwareSerial.h>
@@ -22,9 +24,7 @@ int c=0;
 int test=0;
 
 void setup() {
-  //initialize Serial Monitor  g
   Serial.begin(9600);  
-  //SerialGPS.begin(9600, SERIAL_8N1, 16, 17);
   while (!Serial);
   Serial.println("LoRa Repeater");
   //setup LoRa transceiver module
@@ -78,16 +78,21 @@ Serial.println(rssi_rx);
   
   //Send LoRa packet to receiver
   LoRa.beginPacket();
-  LoRa.print("Message Nr: ");
-  LoRa.print(counter);
-  LoRa.print("  -   RSSI:");
-  LoRa.print(sensIN);
+ // LoRa.print("Repeated Message Nr: ");
+  LoRa.print(LoRaData);
+  LoRa.print(" | Recieved with RSSI: "); 
+  LoRa.print(rssi_rx);
+  LoRa.print("| Resent from Sender ");
+  LoRa.print(myID);
+  LoRa.print(" with Nr:");
+  LoRa.print(counter); 
+  
   Serial.println(LoRa.endPacket());
   counter++;
   if(counter>=10000){
     counter=0;
   }
-  delay(1000);
+
 
    
   }
