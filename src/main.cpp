@@ -5,14 +5,16 @@
   More resources: https://randomnerdtutorials.com
 *********/
 
+// GPS conected to 
+// RXD -> 17
+// TXD -> 16
+// GND -> GND
+// VCC -> 5V
+// PPS -> NC
+
 #include <SPI.h>
 #include <LoRa.h>
-
 #define myID 2
-//#include <SoftwareSerial.h>
-//#include <HardwareSerial.h> // sollte bereits mit Arduino IDE installiert sein
-//#include <SoftwareSerial.h>
-//HardwareSerial SerialGPS(2);
 //define the pins used by the transceiver module
 #define ss 18//5
 #define rst 14
@@ -25,6 +27,9 @@ int test=0;
 
 void setup() {
   Serial.begin(9600);  
+//Serial1.begin(9600); 
+Serial2.begin(9600); 
+
   while (!Serial);
   Serial.println("LoRa Repeater");
   //setup LoRa transceiver module
@@ -53,6 +58,18 @@ void setup() {
 int incomingByte = 0; // for incoming serial data
 int sensIN;
 void loop() {
+ 
+ while (Serial2.available()) {
+    // get the new byte:
+    char inChar = (char)Serial2.read();
+     Serial.print(inChar);
+    //Serial.println("2");
+ }
+
+
+
+
+
  int packetSize = LoRa.parsePacket();
   if (packetSize) {
     String LoRaData="";
