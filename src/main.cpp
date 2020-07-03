@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <EEPROM.h>
 #include <WiFi.h>
 #include <time.h>
@@ -11,8 +12,10 @@
 // VCC -> 5V
 // PPS -> NC
 
-const char *ssid = "VodafoneMobileWiFi-76E532";
-const char *password = "0660946111";
+
+
+const char *ssid = "Waterhole_2.4G";
+const char *password = "*********";
 const char *iphost = "raincloud.bplaced.net";
 
 //String url = "/sentLora.php"
@@ -41,33 +44,42 @@ unsigned int myID;
 #define eeExtCMD 0x1
 unsigned int extCMD;
 
- long getBW(int bw){
-    switch (bw) {
+long getBW(int bw)
+{
+  switch (bw)
+  {
 
-    case 0: return 7.8E3;
+  case 0:
+    return 7.8E3;
 
-    case 1: return 10.4E3;
+  case 1:
+    return 10.4E3;
 
-    case 2: return 15.6E3;
+  case 2:
+    return 15.6E3;
 
-    case 3: return 20.8E3;
+  case 3:
+    return 20.8E3;
 
-    case 4: return 31.25E3;
+  case 4:
+    return 31.25E3;
 
-    case 5: return 41.7E3;
+  case 5:
+    return 41.7E3;
 
-    case 6: return 62.5E3;
+  case 6:
+    return 62.5E3;
 
-    case 7: return 125E3;
+  case 7:
+    return 125E3;
 
-    case 8: return 250E3;
+  case 8:
+    return 250E3;
 
-    case 9: return 500E3;
-
+  case 9:
+    return 500E3;
   }
- }
-
-
+}
 
 void setEEPROM()
 {
@@ -79,7 +91,8 @@ void setEEPROM()
 void getEEPROM()
 {
   EEPROM.begin(512);
-  // EEPROM.write(eeID,1);
+  // EEPROM.write(eeID,7);
+  // EEPROM.write(eeExtCMD,0);
   //EEPROM.commit();
   myID = EEPROM.read(eeID);
   extCMD = EEPROM.read(eeExtCMD);
@@ -184,7 +197,7 @@ String gridSync()
   str += (", \"Payload\":");
   str += ("{\"Beacon\":");
   str += (myID);
-  
+
   str += (",\"Status\":\"Online\"}");
 
   //LoRa.print("\"");
@@ -256,12 +269,13 @@ String decodeJson(String inputStr, String searchStr, String type)
   //  Serial.println(del_Anf);
 
   del_End = inputStr.indexOf(",", del_Anf);
- 
+
   str = inputStr.substring(del_Anf, del_End);
-  
-  int del_test=str.indexOf("}");
-  if (del_test != -1){
-    str=str.substring(0,del_test);
+
+  int del_test = str.indexOf("}");
+  if (del_test != -1)
+  {
+    str = str.substring(0, del_test);
   }
   // Serial.println(str);
 
@@ -279,42 +293,48 @@ String decodeJson(String inputStr, String searchStr, String type)
 }
 
 void getCMD(String inStr)
-{ 
+{
   int BWin;
   int SFin;
   String valIn;
- // Serial.println(inStr);
+  // Serial.println(inStr);
 
   String searchStr = "SF";
   //Serial.print(searchStr);
   //Serial.print(": ");
-  valIn=decodeJson(inStr, searchStr, "int");
+  valIn = decodeJson(inStr, searchStr, "int");
   //Serial.println(valIn);
-  SFin=valIn.toInt();
- //Serial.println(loraSF);
- searchStr = "BW";
-//  Serial.print(searchStr);
-//  Serial.print(": ");
-  valIn=decodeJson(inStr, searchStr, "int");
-//  Serial.println(valIn);
-  BWin=valIn.toInt();
- if (SFin!=-1){
- Serial.print("LoRa Modul set to SF: ");
- Serial.println(SFin); 
- loraSF= SFin;
- LoRa.setSpreadingFactor(loraSF);
- }else{
-   Serial.println("LoRa Modul set to SF: KEEP");
- }
- if (BWin!=-1){
- long newBW=getBW(BWin);
- Serial.print("LoRa Modul set to BW: ");
- Serial.println(newBW);
- loraBW=BWin;
- LoRa.setSignalBandwidth(newBW);
-  }else{
-   Serial.println("LoRa Modul set to BW: KEEP");
- }
+  SFin = valIn.toInt();
+  //Serial.println(loraSF);
+  searchStr = "BW";
+  //  Serial.print(searchStr);
+  //  Serial.print(": ");
+  valIn = decodeJson(inStr, searchStr, "int");
+  //  Serial.println(valIn);
+  BWin = valIn.toInt();
+  if (SFin != -1)
+  {
+    Serial.print("LoRa Modul set to SF: ");
+    Serial.println(SFin);
+    loraSF = SFin;
+    LoRa.setSpreadingFactor(loraSF);
+  }
+  else
+  {
+    Serial.println("LoRa Modul set to SF: KEEP");
+  }
+  if (BWin != -1)
+  {
+    long newBW = getBW(BWin);
+    Serial.print("LoRa Modul set to BW: ");
+    Serial.println(newBW);
+    loraBW = BWin;
+    LoRa.setSignalBandwidth(newBW);
+  }
+  else
+  {
+    Serial.println("LoRa Modul set to BW: KEEP");
+  }
 
   //Serial.println(inStr);
 }
@@ -333,6 +353,7 @@ void setup()
   while (!Serial)
     ;
   Serial.println("LoRa Repeater");
+  delay(1000);
   //setup LoRa transceiver module
   LoRa.setPins(ss_pin, rst_pin, dio0_pin);
   //replace the LoRa.begin(---E-) argument with your location's frequency
@@ -364,7 +385,10 @@ void setup()
   url = "/sentLora.php?id=";
   url += myID;
   WiFi.begin(ssid, password);
+
   //WiFi.begin(ssid);
+  Serial.print("Connecting to: ");
+  Serial.println(ssid);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
@@ -399,9 +423,8 @@ void setup()
   // Serial.println(gridSync());
   //LoRa.dumpRegisters(Serial);
   getCMD(postData(iphost, url, gridSync()));
-  
- // LoRa.dumpRegisters(Serial);
 
+  // LoRa.dumpRegisters(Serial);
 }
 
 void displayInfo()
@@ -456,7 +479,7 @@ void displayInfo()
   Serial.println();
 }
 int lastMsg;
-int interval = 60000;
+int interval = 23000;
 void loop()
 {
 
@@ -518,13 +541,21 @@ void loop()
       hartbeat += (gps.location.lng(), 6);
       hartbeat += ("}");
     }
-    hartbeat += (", \"Payload\":");
-    hartbeat += ("\"Tragt einen Aluhut\"");
+    hartbeat += (", \"Payload\":\"");
+    //hartbeat += ("\"Tragt einen Aluhut\"");
+     hartbeat += ("#");
+   hartbeat += (counter);
+    hartbeat += ("@");
+    hartbeat += (myID);
     //  hartbeat+=("\"");
-    hartbeat += ("}");
+    hartbeat += ("\"}");
 
     LoRa.beginPacket();
-    LoRa.print(hartbeat);
+    //LoRa.print(hartbeat);
+    LoRa.print("#");
+    LoRa.print(counter);
+    LoRa.print("@");
+    LoRa.print(myID);
     LoRa.endPacket();
     Serial.println(hartbeat);
     getCMD(postData(iphost, url, hartbeat));
@@ -629,16 +660,23 @@ void loop()
     json_Msg += String(lng, 6);
     json_Msg += ("}");
 
-    json_Msg += (", \"Payload\":");
+    json_Msg += (", \"Payload\":\"");
     json_Msg += (LoRaData);
     //LoRa.print("\"");
-    json_Msg += ("}");
-    ++counter;
+    json_Msg += ("\"}");
+    
     Serial.print(json_Msg);
     LoRa.beginPacket();
-    LoRa.print(json_Msg);
+
+    //LoRa.print(json_Msg);
+    LoRa.print(LoRaData);
+     
+    LoRa.print("@");
+    LoRa.print(myID);
     LoRa.endPacket();
-    Serial.println(postData(iphost, url, json_Msg));
+    postData(iphost, url, json_Msg);
+    Serial.println("send to Server");
+    ++counter;
   }
   /*
   int packetSize = LoRa.parsePacket();
